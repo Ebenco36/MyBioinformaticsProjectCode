@@ -101,7 +101,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   gene_map = read_csv(gene_map, col_names = c('enstid', 'ensgid'))
   print(sample_files_sub)
   count_data_sub = tximport(files = sample_files_sub, type = count_type, tx2gene = gene_map, ignoreTxVersion = ignoreTxVersion)
-  print(count_data_sub)
+  #print(count_data_sub)
   
   
   sample_table_sub = as.data.frame(sample_table_sub)
