@@ -80,13 +80,14 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   print(sample_table)
   sample_table = dplyr::select(sample_table, `Run`, BioSample,`Assay Type`,Experiment, Platform, ReleaseDate, Condition)
   sample_table = unique(sample_table)
-  Gs <- strsplit(slice_group, ",")[[1]]
-  print(Gs)
-  print(sample_table[Gs[1],])
-  left = strsplit(Gs[1], ":")[[1]]
-  right = strsplit(Gs[2], ":")[[1]]
-  print(right)
-  sample_table_sub <- rbind(sample_table[left[1]:left[2],], sample_table[right[1]:right[2],])
+  #slice_group = "1:5, 6:10, 11:15"
+  datat <- strsplit(slice_group, ",")[[1]]
+  sample_table_sub = data.frame()
+  for (splitS in datat){
+    resp = strsplit(splitS, ":")[[1]]
+    
+    sample_table_sub <- rbind(sample_table_sub, sample_table[resp[1]:resp[2],])
+  }
   view(sample_table)
   
   if (count_type == "salmon")
@@ -100,6 +101,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   gene_map = read_csv(gene_map, col_names = c('enstid', 'ensgid'))
   print(sample_files_sub)
   count_data_sub = tximport(files = sample_files_sub, type = count_type, tx2gene = gene_map, ignoreTxVersion = ignoreTxVersion)
+  print(count_data_sub)
   
   
   sample_table_sub = as.data.frame(sample_table_sub)
@@ -393,7 +395,15 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
                                               by=c('ensgene'='ensembl_gene_id'))
   
   # View(annotated_df_sub_down_regulated)
+  write.csv(annotated_df_sub_up_regulated, paste(output_dir,"/Upregulated.csv",sep=""))
+  write.csv(annotated_df_sub_down_regulated, paste(output_dir,"/Downregulated.csv",sep=""))
+  write.csv(annotated_df_sub, paste(output_dir,"/All_regulated.csv",sep=""))
   
+  resss = c(paste('up_regulated : ',sum(complete.cases(annotated_df_sub_up_regulated)),sep=""),
+        paste('down_regulated : ', sum(complete.cases(annotated_df_sub_down_regulated)),sep=""),
+        paste('all_regulated : ', sum(complete.cases(annotated_df_sub)),sep=""))
+  
+  write.csv(resss, paste(output_dir,"/Summary_regulated.csv",sep=""))
   
   write.csv(annotated_df_sub[annotated_df_sub$test == TRUE,], paste(output_dir,"/BioMartInfoJoin.csv",sep=""))
   degs_sub = annotated_df_sub$ensgene
@@ -571,11 +581,11 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   cnetplot(ego_all, showCategory=5, foldChange = fold_change)
   goplot(ego_all)
   print("Here 7")
-  BiocManager::install("GOstats")
-  BiocManager::install("GOHyperGParams")
-  library(GO.db)
-  library(GOstats)
-  print("Here 8")
+  #BiocManager::install("GOstats")
+  #BiocManager::install("GOHyperGParams")
+  #library(GO.db)
+  #library(GOstats)
+  #print("Here 8")
   # View(as.data.frame(annotated_df_sub))
   # order_upregulated = annotated_df_sub_up_regulated[order(annotated_df_sub_up_regulated$log2FoldChange, decreasing = TRUE), ]
   # selectedUpRegGene = order_upregulated$ensgene
@@ -593,28 +603,14 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   # summary(selectedUpRegGene)
   # Ontology
   
-  UpParams = new('GOHyperGParams',
-                 geneIds=ent_gene_up,
-                 universeGeneIds=ent_uni,
-                 annotation="org.Hs.eg.db",
-                 ontology="BP",
-                 pvalueCutoff=0.01,
-                 conditional=FALSE,
-                 testDirection="over")
+  #UpParams = new('GOHyperGParams',geneIds=ent_gene_up,universeGeneIds=ent_uni,annotation="org.Hs.eg.db",ontology="BP",pvalueCutoff=0.01,conditional=FALSE,testDirection="over")
   
   
-  DownParams = new('GOHyperGParams',
-                   geneIds=ent_gene_up,
-                   universeGeneIds=ent_uni,
-                   annotation="org.Hs.eg.db",
-                   ontology="BP",
-                   pvalueCutoff=0.01,
-                   conditional=FALSE,
-                   testDirection="over")
+  #DownParams = new('GOHyperGParams',geneIds=ent_gene_up,universeGeneIds=ent_uni,annotation="org.Hs.eg.db",ontology="BP",pvalueCutoff=0.01,conditional=FALSE,testDirection="over")
   
-  UpGTestBP = hyperGTest(UpParams)
-  summary(UpGTestBP)[1:10,]
-  DownGTestBP = hyperGTest(DownParams)
+  #UpGTestBP = hyperGTest(UpParams)
+  #summary(UpGTestBP)[1:10,]
+  #DownGTestBP = hyperGTest(DownParams)
   
   
   # if (CatToTest == "KEGG"){
@@ -632,11 +628,10 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   
   # Gene Ontology Analysis
   
-  ekg = enrichKEGG(gene = ent_gene_up,
-                   universe = ent_uni)
-  ekg
+  #ekg = enrichKEGG(gene = ent_gene_up,universe = ent_uni)
+  #ekg
   
-  write_tsv(annotated_df_enrichmentAnalysis_sub, paste(output_dir,"/annotated_df_enrichmentAnalysis_sub.csv",sep=""))
+  #write_tsv(annotated_df_enrichmentAnalysis_sub, paste(output_dir,"/annotated_df_enrichmentAnalysis_sub.csv",sep=""))
   
   dev.off()
   

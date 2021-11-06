@@ -392,8 +392,8 @@ def SalmonQuant(
             subprocess.call(commandSalmon)
         print("Done generating quantifications...")
 
-def RunRAnalysis(file="SraRunTableIschemicStroke.txt", path_to_quant="quants/", gene_map="gene_map.csv", count_type="salmon", ignoreTxVersion='TRUE', sample_split="1:10, 11:15", split_group="AIS,NC", sample_count="10, 5"):
-    Load(file, path_to_quant, gene_map, count_type, ignoreTxVersion, sample_split, split_group, sample_count)
+def RunRAnalysis(file="SraRunTableIschemicStroke.txt", path_to_quant="quants/", gene_map="gene_map.csv", count_type="salmon", ignoreTxVersion='TRUE', sample_split="1:10, 11:15", split_group="AIS,NC", sample_count="10, 5", result_path="RData3"):
+    Load(file, path_to_quant, gene_map, count_type, ignoreTxVersion, sample_split, split_group, sample_count, result_path)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -435,12 +435,13 @@ if __name__ == '__main__':
     parser.add_argument('--sample_split', type = str, default="1:10, 11:15", )
     parser.add_argument('--split_group', type = str, default="AIS,NC", )
     parser.add_argument('--sample_count', type = str, default="10, 5")
+    parser.add_argument('--result_path', type = str, default="RData3")
 
 
     args = parser.parse_args()
 
     # DownloadSplit(args.sra_run_file, args.srr_column_name, args.read_type, args.fastq_dir, args.sra_accession)
-    fastQcMultiQc(args.sra_run_file, args.srr_column_name, args.read_type, args.fastqc_dir, args.multiqc_dir, args.fastq_dir, args.sra_accession)
+    # fastQcMultiQc(args.sra_run_file, args.srr_column_name, args.read_type, args.fastqc_dir, args.multiqc_dir, args.fastq_dir, args.sra_accession)
     if args.applyTrimmomatic == 'yes':
         applyTrimmomatic(
             args.trimmed_fastq_dir, 
@@ -454,7 +455,6 @@ if __name__ == '__main__':
             args.adaptors_dir,
             args.sra_accession
         )
-    fastQcMultiQc(args.sra_run_file, args.srr_column_name, args.read_type, args.fastqc_dir, args.multiqc_dir, args.fastq_dir)
     if args.generate_adaptors == 'yes':
         generateAdaptors(args.read_type, args.sra_run_file, args.srr_column_name, args.fastq_dir, args.sra_accessions)
 
@@ -490,7 +490,8 @@ if __name__ == '__main__':
             ignoreTxVersion=args.ignoreTxVersion, 
             sample_split=args.sample_split, 
             split_group=args.split_group, 
-            sample_count=args.sample_count
+            sample_count=args.sample_count,
+            result_path = args.result_path
         )
 
     # buildFiles(args.reference_genome_file)
@@ -500,6 +501,9 @@ if __name__ == '__main__':
 # grep -e '^ENST[[:digit:]]\{11\}' ./gencode.v35.transcripts.fa > enst.txt
 
 # python3 ischemicStroke.py --sra_run_file=/Users/mac/Downloads/SraRunTableV2.txt
+
+
+#python3 ischemicStroke.py --runAnalysis="yes" --result_path="RData4" --sra_run_file=SraRunTableIschemicStroke.txt --quantify_dir="quants" --sample_split="1:5, 11:15" --split_group="SUB,NC", --sample_count="5, 5"
 
 #RDP Password: AN#2:KcfVv/6/|x
 #student_00_c324bc431
