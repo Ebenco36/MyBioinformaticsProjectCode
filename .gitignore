@@ -1,0 +1,15 @@
+FASTQ
+
+adaptors
+.ipynb_checkpoints
+__pycache__
+/FASTQC/.git
+trimmedData
+quants
+kallisto_quants
+gencode_v33_index
+MULTIQC_TRIMMED
+FASTQC_TRIMMED
+splitFastqFiles
+gencode_v33_index_kallisto
+gencode.v35.transcripts.fa

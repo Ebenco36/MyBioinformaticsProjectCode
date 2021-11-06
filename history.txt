@@ -1,0 +1,76 @@
+conda activate salmonenv
+
+
+Where all temp files recides
+
+ cd  /Users/mac/ncbi/public/sra/
+
+
+ SPades installation
+
+
+curl http://cab.spbu.ru/files/release3.15.3/SPAdes-3.15.3-Darwin.tar.gz -o SPAdes-3.15.3-Darwin.tar.gz tar -zxf SPAdes-3.15.3-Darwin.tar.gz
+
+ export PATH=$PATH:~/SPAdes-3.15.3-Darwin/bin/
+
+
+ spades.py --pe1-12 /Users/mac/Desktop/Bioinformatics/PythonScriptProject/FASTQ/SRR8207876_1.fastq --pe1-12 /Users/mac/Desktop/Bioinformatics/PythonScriptProject/FASTQ/SRR8207876_2.fastq \
+    -o spades_output
+
+spades.py --isolate --pe1-12 /Users/mac/Desktop/Bioinformatics/PythonScriptProject/FASTQ/SRR8207876_1.fastq.gz --pe1-12 /Users/mac/Desktop/Bioinformatics/PythonScriptProject/FASTQ/SRR8207876_2.fastq.gz \
+    -o spades_output
+
+
+
+
+
+De Bruijn Graph
+
+Genome AAABBBA
+3-kmers: AAA AAB ABB BBB BBA
+
+De Bruijn process starts from here
+
+Left/Right 2-kmers 
+
+AAA => AA AA -> 2 nodes are created and due to the fact that these nodes are 
+the same one is selected and we make an edge that starts from AA and points 
+to AA.
+
+
+AAB => AA AB -> 2 nodes are also created here. Note that AA already exist
+AB nodes is selected. Edge starts from AA to AA again for the first AA
+while another edge moves from AA to AB.
+
+These processes occurs iteratively until all the nodes and edges are stated.
+
+One nodes per distinct k-1-mer 
+
+Walk crossing each edge exactly once gives a reconstruction of the genome
+This is called an Eulerian walk.
+
+
+NORMALIZATION METHODS (LOOKOUT)
+
+TMM (Trimmed Medium of mean)
+===========================================
+Calculate per row geometric mean
+Geo_mean = multiply(column values in a row)
+ratio = column value / Geo_mean
+
+Defect of TMM is that if zero appears in any of the column then everything 
+turns out to be zero
+
+Then, we find the median column-wise after the ratio has been calculated
+which turns out to be our size factor
+
+size_factor = median(column-wise)
+
+Now, we can divide the column values with the size_factor to get our normalized 
+counts
+
+Normalized_count = column_value / size_factor
+
+
+
+
