@@ -1,0 +1,13 @@
+,AdaBoostClassifier,BaggingClassifier,BernoulliNB,DecisionTreeClassifier,DummyClassifier,ExtraTreeClassifier,ExtraTreesClassifier,GaussianNB,KNeighborsClassifier,LabelPropagation,LabelSpreading,LinearDiscriminantAnalysis,LinearSVC,LogisticRegression,NearestCentroid,NuSVC,PassiveAggressiveClassifier,Perceptron,QuadraticDiscriminantAnalysis,RandomForestClassifier,RidgeClassifier,RidgeClassifierCV,SGDClassifier,SVC,XGBClassifier,LGBMClassifier
+0, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, AIS
+1, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS
+2, AIS, AIS, AIS, AIS,SAS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS
+3,SAS,SAS, AIS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS, AIS
+4,SAS, AIS,SAS,SAS, AIS,SAS,SAS,SAS, AIS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS, AIS
+5, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, AIS
+6,SAS,SAS,SAS,SAS, NC,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS, AIS
+7, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS
+8, NC, NC, AIS, NC,SAS, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, AIS
+9, NC, NC, NC, NC,SAS, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, NC, AIS
+10,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS,SAS, AIS
+11, AIS, AIS, AIS, AIS, NC, AIS, AIS, AIS, NC, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS, AIS

@@ -17,6 +17,7 @@ import time
 import glob
 import re, sys
 from ROperations import Load
+from MachineLearningModel import machineLearning
 
 def downloadSRA(SRARunTable):
 
@@ -437,6 +438,15 @@ if __name__ == '__main__':
     parser.add_argument('--sample_count', type = str, default="10, 5")
     parser.add_argument('--result_path', type = str, default="RData3")
 
+    parser.add_argument('--machineLearningAnalysis', type = str, default = "no", choices = ['yes', 'no'])
+    parser.add_argument('--input_file', type = str, default="../../../normalizedCounts.csv")
+    parser.add_argument('--graphFileName', type = str, default="result")
+
+    parser.add_argument('--component_n', type = str, default="3")
+    parser.add_argument('--path_to_save', type = str, default="machineLearningReport")
+    
+    
+
 
     args = parser.parse_args()
 
@@ -493,6 +503,15 @@ if __name__ == '__main__':
             sample_count=args.sample_count,
             result_path = args.result_path
         )
+    if args.machineLearningAnalysis == 'yes':
+        machineLearning(
+            file=args.input_file, 
+            path_to_save=args.path_to_save, 
+            component_n=args.component_n, 
+            condition=args.split_group, 
+            sample_count=args.sample_count,
+            graphFileName=args.graphFileName
+        )
 
     # buildFiles(args.reference_genome_file)
 
@@ -503,7 +522,14 @@ if __name__ == '__main__':
 # python3 ischemicStroke.py --sra_run_file=/Users/mac/Downloads/SraRunTableV2.txt
 
 
-#python3 ischemicStroke.py --runAnalysis="yes" --result_path="RData4" --sra_run_file=SraRunTableIschemicStroke.txt --quantify_dir="quants" --sample_split="1:5, 11:15" --split_group="SUB,NC", --sample_count="5, 5"
+#python3 ischemicStroke.py --runAnalysis="yes" --result_path="sub_acute_control" --sra_run_file=SraRunTableIschemicStroke.txt --quantify_dir="quants/" --sample_split="1:5, 11:15" --split_group="SAS,NC", --sample_count="5, 5"
+#python3 ischemicStroke.py --runAnalysis="yes" --result_path="acute_control" --sra_run_file=SraRunTableIschemicStroke.txt --quantify_dir="quants/" --sample_split="6:10, 11:15" --split_group="AIS,NC", --sample_count="5, 5"
+
+#python3 ischemicStroke.py --runAnalysis="yes" --result_path="all_samples_with_control" --sra_run_file=SraRunTableIschemicStroke.txt --quantify_dir="quants/" --sample_split="1:5, 6:10, 11:15" --split_group="SAS, AIS, NC", --sample_count="5, 5, 5"
+
+#python3 ischemicStroke.py --machineLearningAnalysis="yes" --input_file="../../../normalizedCounts.csv" --path_to_save="machineLearningReport" --component_n="3"  --split_group="SAS, AIS, NC", --sample_count="5, 5, 5" --graphFileName="result"
+
+
 
 #RDP Password: AN#2:KcfVv/6/|x
 #student_00_c324bc431

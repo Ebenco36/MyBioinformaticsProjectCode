@@ -15,7 +15,8 @@ def machineLearning(
     sample_count="5, 5",
     graphFileName="graph"
 ):
-    pp = PdfPages('Save multiple plots as PDF.pdf')
+    pp = PdfPages('{}/{}.pdf'.format(path_to_save, graphFileName))
+    component_n = int(component_n)
     # Check whether the specified path exists or not
     isExist = os.path.exists(path_to_save)
 
@@ -192,6 +193,10 @@ def machineLearning(
 
     clf = LazyClassifier(verbose=0,ignore_warnings=True, custom_metric=None, predictions=True)
     regr=LazyRegressor(verbose=0,predictions=True)
+
+    print("Here we are")
+    print(train_lbl.shape)
+    print(test_lbl.shape)
     models_train,predictions_train = clf.fit(train_data_transform, train_data_transform, train_lbl, train_lbl)
     models_test,predictions_test = regr.fit(train_data_transform, test_data_transform, train_lbl, test_lbl)
 
@@ -200,6 +205,8 @@ def machineLearning(
     print(models_test)
     print(predictions_test)
 
+    pd.DataFrame(train_lbl).to_csv('./{}/label_train.csv'.format(path_to_save))
+    pd.DataFrame(test_lbl).to_csv('./{}/label_test.csv'.format(path_to_save))
     predictions_train.to_csv('./{}/predictions_train.csv'.format(path_to_save))
     models_test.to_csv('./{}/models_test.csv'.format(path_to_save))
     predictions_test.to_csv('./{}/predictions_test.csv'.format(path_to_save))
