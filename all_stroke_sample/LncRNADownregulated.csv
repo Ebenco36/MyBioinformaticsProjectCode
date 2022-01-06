@@ -1,0 +1,2 @@
+"","ensgene","baseMean","log2FoldChange","lfcSE","stat","pvalue","padj","chromosome_name","start_position","end_position","strand","gene_biotype","external_gene_name","description"
+"1","ENSG00000229807",1910.10807975407,8.14153531881853,1.67968834704555,4.84705114084937,1.25310133438077e-06,0.0147806115471815,"X",73820649,73852723,-1,"lncRNA","XIST","X inactive specific transcript [Source:HGNC Symbol;Acc:HGNC:12810]"

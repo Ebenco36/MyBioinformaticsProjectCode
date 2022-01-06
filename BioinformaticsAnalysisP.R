@@ -42,7 +42,7 @@ library(clusterProfiler)
 library(org.Hs.eg.db)
 library(tidyverse)
 library(readr)
-
+library(stringi)
 library("optparse")
 
 option_list = list(
@@ -74,7 +74,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
     dir.create(paste0(path, '/', newfolder))
     print("Dir already exists!")
   }
-  
+  output_dir <- stri_trim_both(output_dir)
   pdf(paste0(output_dir,"/graphs/", "Bioinformatics.pdf"))
   sample_table = read_csv(file)
   print(sample_table)
@@ -167,17 +167,22 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   
   
   
-  
+  png(file=paste(output_dir,"/graphs/BoxPlot_for_normalizedCount.png",sep=""),width=1000, height=600)
   boxplot(counts(deseq_dataset_sub, normalized=TRUE))
+  dev.off()
+  
   print("Graph 1 without Normalization is being generated in PDF...")
+  png(file=paste(output_dir,"/graphs/BoxPlot_for_VariantTransformedCount.png",sep=""),width=1000, height=600)
   vst_sub = varianceStabilizingTransformation(deseq_dataset_sub)
   boxplot(assay(vst_sub))
+  dev.off()
   print("Normalized Graph 2 is being generated in PDF...")
   
   # observe the cell line effect
-  
+  png(file=paste(output_dir,"/graphs/PCAPlot.png",sep=""),width=1000, height=600)
   plotPCA(vst_sub, intgroup='conditions') +
     theme_bw()
+  dev.off()
   ggsave(paste(output_dir,"/graphs/AllPCA.png",sep=""))
   print("PCA Graph 3 is being generated...")
   
@@ -188,7 +193,9 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   d_sub = dist(d_sub)
   d_sub
   h_sub = hclust(d_sub)
+  png(file=paste(output_dir,"/graphs/HistogramPlot.png",sep=""),width=1000, height=600)
   plot(h_sub)
+  dev.off()
   print("Histogram Graph 4 is being generated in PDF...")
   
   #Using kmeans for clustering
@@ -238,9 +245,10 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   result_df_sub = as.data.frame(result_table_sub)
   # View(result_df_sub)
   write.csv(result_df_sub, paste(output_dir,"/TtestValuesCounts.csv",sep=""))
-  
+  png(file=paste(output_dir,"/graphs/SingleTestusingSingleGene.png",sep=""),width=1000, height=600)
   plotCounts(statistics_wald_test_sub, gene='ENSG00000060709',
              intgroup='conditions')
+  dev.off()
   print("With Sample ENSG0000000060709 Graph 5 is being generated...")
   sum(!complete.cases(result_df_sub))
   
@@ -267,8 +275,9 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   write.csv(filter_df_sub, paste(output_dir,"/FilterGreaterThan1withpadjlessthen005.csv",sep=""))
   dim(filter_df_sub)
   # View(filter_df_sub)
-  
+  png(file=paste(output_dir,"/graphs/MAPlot.png",sep=""),width=1000, height=600)
   plotMA(result_table_sub)
+  dev.off()
   print("MA Plot Graph 6 is being generated in PDF...")
   
   # volcano plot
@@ -279,6 +288,9 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   filter_df$test = filter_df$padj < 0.05 & abs(filter_df$log2FoldChange) > 1
   abs(filter_df$log2FoldChange) 
   write.csv(filter_df_sub, 'rownametocolumnSub.csv')
+  
+  
+  png(file=paste(output_dir,"/graphs/VolcanoPlot.png",sep=""),width=1000, height=600)
   
   g_sub = ggplot(filter_df, aes(x=log2FoldChange, y=-log10(padj), name=ensgene)) +
     geom_point(aes(colour=test), size=1, alpha=0.3) +
@@ -293,6 +305,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   
   print(g_sub + ggtitle("Differential Expressed Genes"))
   ggsave(paste(output_dir,"/graphs/LogFoldChangePlot.png",sep=""))
+  dev.off()
   ordered_data = filter_df[order(abs(filter_df$log2FoldChange), decreasing=TRUE),]
   # View(as.data.frame(ordered_data))
   #ggplotly(g_sub)
@@ -394,19 +407,52 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   annotated_df_sub_down_regulated = left_join(down_regulated, annotation_sub_downregulated,
                                               by=c('ensgene'='ensembl_gene_id'))
   
+  annotated_df_lncRNA_up_reg = filter(left_join(up_regulated, annotation_sub_upregulated,
+                                         by=c('ensgene'='ensembl_gene_id')), gene_biotype=="lncRNA")
+  annotated_df_lncRNA_down_reg = filter(left_join(down_regulated, annotation_sub_downregulated,
+                                                by=c('ensgene'='ensembl_gene_id')), gene_biotype=="lncRNA")
+  
+  annotated_df_protein_coding_up_reg = filter(left_join(up_regulated, annotation_sub_upregulated,
+                                                 by=c('ensgene'='ensembl_gene_id')), 
+                                       gene_biotype=="protein_coding")
+  
+  annotated_df_protein_coding_down_reg = filter(left_join(down_regulated, annotation_sub_downregulated,
+                                                        by=c('ensgene'='ensembl_gene_id')), 
+                                              gene_biotype=="protein_coding")
+  
+  
+  annotated_df_un_identified= filter(left_join(all_regulated, annotation_sub,
+                                               by=c('ensgene'='ensembl_gene_id')), 
+                                     gene_biotype!="protein_coding" & gene_biotype!="lncRNA")
+  
   # View(annotated_df_sub_down_regulated)
+  write.csv(annotated_df_lncRNA_up_reg, paste(output_dir,"/LncRNAUpregulated.csv",sep=""))
+  write.csv(annotated_df_lncRNA_down_reg, paste(output_dir,"/LncRNADownregulated.csv",sep=""))
+  write.csv(annotated_df_protein_coding_up_reg, paste(output_dir,"/ProteinCodingUpregulated.csv",sep=""))
+  write.csv(annotated_df_protein_coding_down_reg, paste(output_dir,"/ProteinCodingDownregulated.csv",sep=""))
+  write.csv(annotated_df_un_identified, paste(output_dir,"/unidentifiedregulated.csv",sep=""))
+  
   write.csv(annotated_df_sub_up_regulated, paste(output_dir,"/Upregulated.csv",sep=""))
   write.csv(annotated_df_sub_down_regulated, paste(output_dir,"/Downregulated.csv",sep=""))
   write.csv(annotated_df_sub, paste(output_dir,"/All_regulated.csv",sep=""))
   
-  resss = c(paste('up_regulated : ',sum(complete.cases(annotated_df_sub_up_regulated)),sep=""),
-        paste('down_regulated : ', sum(complete.cases(annotated_df_sub_down_regulated)),sep=""),
-        paste('all_regulated : ', sum(complete.cases(annotated_df_sub)),sep=""))
+  resss = c(
+      paste('lncRNA_up_regulated : ',sum(complete.cases(annotated_df_lncRNA_up_reg)),sep=""),
+      paste('lncRNA_down_regulated : ', sum(complete.cases(annotated_df_lncRNA_down_reg)),sep=""),
+      paste('Protein_coding_up_regulated : ',sum(complete.cases(annotated_df_protein_coding_up_reg)),sep=""),
+      paste('Protein_coding_down_regulated : ', sum(complete.cases(annotated_df_protein_coding_down_reg)),sep=""),
+      paste('Unidentified_regulated : ',sum(complete.cases(annotated_df_un_identified)),sep=""),
+      paste('up_regulated : ',sum(complete.cases(annotated_df_sub_up_regulated)),sep=""),
+      paste('down_regulated : ', sum(complete.cases(annotated_df_sub_down_regulated)),sep=""),
+      paste('all_regulated : ', sum(complete.cases(annotated_df_sub)),sep="")
+  )
   
   write.csv(resss, paste(output_dir,"/Summary_regulated.csv",sep=""))
   
   write.csv(annotated_df_sub[annotated_df_sub$test == TRUE,], paste(output_dir,"/BioMartInfoJoin.csv",sep=""))
   degs_sub = annotated_df_sub$ensgene
+  
+  png(file=paste(output_dir,"/graphs/VolcanoAnnotated.png",sep=""),width=1000, height=600)
   g_sub = ggplot(annotated_df_, aes(x=log2FoldChange, 
                                y=-log10(padj), 
                                name=external_gene_name)) +
@@ -422,6 +468,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   ggplotly(g_sub)
   
   ggsave(paste(output_dir,"/graphs/LogFoldChangePlotWithExternalNames.png",sep=""))
+  dev.off()
   print("Log Fold Change With names Graph 8 is being generated...")
   
   
@@ -444,32 +491,40 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   write.csv(data_for_hm_sub, paste(output_dir,"/HeatMapDataForDEGWithNames.csv",sep=""))
   data_for_hm_sub
   dim(data_for_hm_sub)
+  png(file=paste(output_dir,"/graphs/HeatMap.png",sep=""),width=1000, height=600)
   heatmap(data_for_hm_sub)
+  dev.off()
   print("HeatMap Graph 9 is being generated in PDF...")
   
   #get Better Label
+  png(file=paste(output_dir,"/graphs/PheatMapPlot.png",sep=""),width=1000, height=600)
   pheatmap(data_for_hm_sub, fontsize_row=4, scale='row')
+  dev.off()
   print("PheatMap 1 Graph 10 is being generated in PDF...")
   #To use color brewer we need to install it
   #BioManager::install('RColorBrewer')
   #see all color pelette available
   #display.brewer.all()
   
+  png(file=paste(output_dir,"/graphs/ColoredPheatMapPlot.png",sep=""),width=1000, height=600)
   greys = colorRampPalette(brewer.pal(9, "Greys"))(100)
   
   pheatmap(data_for_hm_sub, fontsize_row=4, scale='row',
            color=greys)
+  dev.off()
   print("PheatMap Grey 2 Graph 11 is being generated in PDF...")
   
   #pairs = colorRampPalette(brewer.pal(12, "Paired"))(100)
   
   #pheatmap(data_for_hm_sub, fontsize_row=4, scale='row',color=pairs)
   
+  png(file=paste(output_dir,"/graphs/PheatMapForDemercation.png",sep=""),width=1000, height=600)
   last_scheme = colorRampPalette(brewer.pal(7, "Blues"))(100)
   
   pheatmap(data_for_hm_sub, fontsize_row=4, scale='row',
            color=last_scheme, cutree_cols = 2,
            cutree_rows = 2)
+  dev.off()
   print("PheatMap 3 Graph 12 is being generated in PDF...")
   
   

@@ -216,14 +216,14 @@ def machineLearning(
     sns.set_theme(style="whitegrid")
     ax = sns.barplot(x=models_train.index, y="Accuracy", data=models_train)
     plt.xticks(rotation=90)
-
+    plt.savefig( '{}/{}.png'.format(path_to_save, 'AccuracyPlotH.png'), bbox_inches='tight')
     pp.savefig(fig1)
 
 
     fig2 = plt.figure(figsize=(20, 30))
     sns.set_theme(style="whitegrid")
     ax = sns.barplot(y=models_train.index, x="Accuracy", data=models_train)
-
+    plt.savefig('{}/{}.png'.format(path_to_save, 'AccuracyPlot.png'), bbox_inches='tight')
     pp.savefig(fig2)
 
 
@@ -231,6 +231,7 @@ def machineLearning(
     sns.set_theme(style="whitegrid")
     ax = sns.barplot(x=models_train.index, y="Time Taken", data=models_train)
     plt.xticks(rotation=90)
+    plt.savefig('{}/{}.png'.format(path_to_save, 'TimePlot.png'), bbox_inches='tight')
 
     pp.savefig(fig3)
 
@@ -264,11 +265,11 @@ def machineLearning(
 
 
 
-machineLearning(
-    file="../../../UnnormalizedCounts.csv", 
-    path_to_save="machineLearning", 
-    component_n=3, 
-    condition="AIS, SUB,NC", 
-    sample_count="5, 5, 5",
-    graphFileName="graphs"
-)
+# machineLearning(
+#     file="../../../UnnormalizedCounts.csv", 
+#     path_to_save="machineLearning", 
+#     component_n=3, 
+#     condition="AIS, SUB,NC", 
+#     sample_count="5, 5, 5",
+#     graphFileName="graphs"
+# )

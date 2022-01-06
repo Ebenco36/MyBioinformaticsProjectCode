@@ -1,0 +1,2 @@
+"","ensgene","baseMean","log2FoldChange","lfcSE","stat","pvalue","padj","chromosome_name","start_position","end_position","strand","gene_biotype","external_gene_name","description"
+"1","ENSG00000279202",78.4796511994542,-1.51391305508413,0.332965657531749,-4.54675435991405,5.44795192329789e-06,0.0147806115471815,"16",24098239,24099971,1,"TEC","","novel transcript"
