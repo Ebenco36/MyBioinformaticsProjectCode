@@ -1,5 +1,18 @@
 <h4>Basic Instructions</h4>
 
+<h5>File structure:</h5>
+
+FASTQC => Directory for Quality check results
+Acute_control => Result after conparing Acute to control
+all_samples_with_control => All infected sample against control
+all_samples_with_controls => All infected sample against control
+all_stroke_sample => Infected samples alone
+analysis_data => More result
+graphs => graph view
+machineLearning => Machine learning result
+machineLearningReport => Machine learning result
+machineLearningReportV1 => Machine learning result
+
 buildFiles(args.reference_genome_file)
 
 # Quantification with Salmon
@@ -37,4 +50,5 @@ python3 ischemicStroke.py --runAnalysis="yes" --result_path="all_stroke_sample" 
 
 # Analyizing quantified data Example 5
 python3 ischemicStroke.py --machineLearningAnalysis="yes" --input_file="../../../normalizedCounts.csv" --path_to_save="machineLearningReport" --component_n="3"  --split_group="SAS, AIS, NC", --sample_count="5, 5, 5" --graphFileName="result"
+
 
