@@ -13,4 +13,4 @@ FASTQC_TRIMMED
 splitFastqFiles
 gencode_v33_index_kallisto
 gencode.v35.transcripts.fa
-MachineLearningV2.py 
+MachineLearningV2s.py 
