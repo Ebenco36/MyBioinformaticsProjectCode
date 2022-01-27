@@ -177,12 +177,18 @@ def machineLearning(
     pca
     pca.fit(train_data_)
 
-
+    pd.DataFrame(train_data_).to_csv('./{}/trained_data_.csv'.format(path_to_save))
+    
+    pd.DataFrame(test_data_).to_csv('./{}/test_data_.csv'.format(path_to_save))
     # Get predicted classes
     pca.n_components_
 
     train_data_transform = pca.transform(train_data_)
     test_data_transform = pca.transform(test_data_)
+    
+    pd.DataFrame(train_data_transform).to_csv('./{}/trained_data_transformed_.csv'.format(path_to_save))
+    
+    pd.DataFrame(test_data_transform).to_csv('./{}/test_data_transformed_.csv'.format(path_to_save))
 
 
     from lazypredict.Supervised import LazyClassifier, LazyRegressor
@@ -194,7 +200,7 @@ def machineLearning(
     clf = LazyClassifier(verbose=0,ignore_warnings=True, custom_metric=None, predictions=True)
     regr=LazyRegressor(verbose=0,predictions=True)
 
-    print("Here we are")
+    print("Here we are gan")
     print(train_lbl.shape)
     print(test_lbl.shape)
     models_train,predictions_train = clf.fit(train_data_transform, train_data_transform, train_lbl, train_lbl)
@@ -211,7 +217,7 @@ def machineLearning(
     models_test.to_csv('./{}/models_test.csv'.format(path_to_save))
     predictions_test.to_csv('./{}/predictions_test.csv'.format(path_to_save))
     models_train.to_csv('./{}/modelTained.csv'.format(path_to_save))
-    
+    print("donw save to files")
     fig1 = plt.figure(figsize=(30, 20))
     sns.set_theme(style="whitegrid")
     ax = sns.barplot(x=models_train.index, y="Accuracy", data=models_train)

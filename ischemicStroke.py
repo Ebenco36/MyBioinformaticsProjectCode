@@ -18,6 +18,7 @@ import glob
 import re, sys
 from ROperations import Load
 from MachineLearningModel import machineLearning
+from MachineLearningV2 import machineLearningv2
 
 from src.downloadSRA import downloadSRA, DownloadSplit
 from src.findAdaptors import generateAdaptors
@@ -64,6 +65,7 @@ if __name__ == '__main__':
     parser.add_argument('--sample_count', type = str, default="10, 5")
     parser.add_argument('--result_path', type = str, default="RData3")
     parser.add_argument('--machineLearningAnalysis', type = str, default = "no", choices = ['yes', 'no'])
+    parser.add_argument('--machineLearningAnalysisV2', type = str, default = "no", choices = ['yes', 'no'])
     parser.add_argument('--input_file', type = str, default="../../../normalizedCounts.csv")
     parser.add_argument('--graphFileName', type = str, default="result")
     parser.add_argument('--component_n', type = str, default="3")
@@ -143,6 +145,16 @@ if __name__ == '__main__':
             graphFileName=args.graphFileName
         )
 
+    
+    if args.machineLearningAnalysisV2 == 'yes':
+        machineLearningv2(
+            file=args.input_file, 
+            path_to_save=args.path_to_save, 
+            component_n=args.component_n, 
+            condition=args.split_group, 
+            sample_count=args.sample_count,
+            graphFileName=args.graphFileName
+        )
     # buildFiles(args.reference_genome_file)
 
     # python3 ischemicStroke.py --sra_run_file=SraRunTableIschemicStroke.txt --kallisto_quantify=yes

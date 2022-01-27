@@ -127,6 +127,14 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   #conditions_sub = rep(conditions_sub, each=5)
   conditions_sub = factor(conditions_sub)
   sample_table_sub$conditions = conditions_sub
+  sample_table$conditions = factor(c(data))
+  
+  split_for_header <- strsplit(slice_group, ",")[[1]]
+  tail_split <- tail(split_for_header, n=1)
+  header_split <-head(split_for_header, n=-1)
+  header_names <- sample_table[strsplit(header_split, ":")[[1]][1]:strsplit(tail_split, ":")[[1]][2],]
+  print("Header names")
+  print(header_names)
   print(sample_table_sub$conditions)
   
   # y ~ x
@@ -166,20 +174,22 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   plot(Test_data[,1], Test_data[, 1])
   
   
-  
-  png(file=paste(output_dir,"/graphs/BoxPlot_for_normalizedCount.png",sep=""),width=1000, height=600)
-  boxplot(counts(deseq_dataset_sub, normalized=TRUE))
+  colnames(deseq_dataset_sub) <- sample_table_sub$Condition
+  png(file=paste(output_dir,"/graphs/BoxPlot_for_normalizedCount.png",sep=""))
+  boxplot(counts(deseq_dataset_sub, normalized=TRUE), names=header_names$conditions)
+  title(main = "Boxplot for normalized gene counts")
   dev.off()
   
   print("Graph 1 without Normalization is being generated in PDF...")
-  png(file=paste(output_dir,"/graphs/BoxPlot_for_VariantTransformedCount.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/BoxPlot_for_VariantTransformedCount.png",sep=""))
   vst_sub = varianceStabilizingTransformation(deseq_dataset_sub)
-  boxplot(assay(vst_sub))
+  boxplot(assay(vst_sub), names=header_names$conditions)
+  title(main = "Boxplot for variance Stabilized Transformed gene counts")
   dev.off()
   print("Normalized Graph 2 is being generated in PDF...")
   
   # observe the cell line effect
-  png(file=paste(output_dir,"/graphs/PCAPlot.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/PCAPlot.png",sep=""))
   plotPCA(vst_sub, intgroup='conditions') +
     theme_bw()
   dev.off()
@@ -193,7 +203,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   d_sub = dist(d_sub)
   d_sub
   h_sub = hclust(d_sub)
-  png(file=paste(output_dir,"/graphs/HistogramPlot.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/HistogramPlot.png",sep=""))
   plot(h_sub)
   dev.off()
   print("Histogram Graph 4 is being generated in PDF...")
@@ -245,7 +255,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   result_df_sub = as.data.frame(result_table_sub)
   # View(result_df_sub)
   write.csv(result_df_sub, paste(output_dir,"/TtestValuesCounts.csv",sep=""))
-  png(file=paste(output_dir,"/graphs/SingleTestusingSingleGene.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/SingleTestusingSingleGene.png",sep=""))
   plotCounts(statistics_wald_test_sub, gene='ENSG00000060709',
              intgroup='conditions')
   dev.off()
@@ -275,7 +285,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   write.csv(filter_df_sub, paste(output_dir,"/FilterGreaterThan1withpadjlessthen005.csv",sep=""))
   dim(filter_df_sub)
   # View(filter_df_sub)
-  png(file=paste(output_dir,"/graphs/MAPlot.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/MAPlot.png",sep=""))
   plotMA(result_table_sub)
   dev.off()
   print("MA Plot Graph 6 is being generated in PDF...")
@@ -290,7 +300,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   write.csv(filter_df_sub, 'rownametocolumnSub.csv')
   
   
-  png(file=paste(output_dir,"/graphs/VolcanoPlot.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/VolcanoPlot.png",sep=""))
   
   g_sub = ggplot(filter_df, aes(x=log2FoldChange, y=-log10(padj), name=ensgene)) +
     geom_point(aes(colour=test), size=1, alpha=0.3) +
@@ -452,7 +462,7 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   write.csv(annotated_df_sub[annotated_df_sub$test == TRUE,], paste(output_dir,"/BioMartInfoJoin.csv",sep=""))
   degs_sub = annotated_df_sub$ensgene
   
-  png(file=paste(output_dir,"/graphs/VolcanoAnnotated.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/VolcanoAnnotated.png",sep=""))
   g_sub = ggplot(annotated_df_, aes(x=log2FoldChange, 
                                y=-log10(padj), 
                                name=external_gene_name)) +
@@ -491,14 +501,15 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   write.csv(data_for_hm_sub, paste(output_dir,"/HeatMapDataForDEGWithNames.csv",sep=""))
   data_for_hm_sub
   dim(data_for_hm_sub)
-  png(file=paste(output_dir,"/graphs/HeatMap.png",sep=""),width=1000, height=600)
-  heatmap(data_for_hm_sub)
+  png(file=paste(output_dir,"/graphs/HeatMap.png",sep=""), width=1200, height=1400)
+  heatmap(data_for_hm_sub,  main = "heatmap row cluster for gene expression data", 
+          scale = 'row', legend = F, fontsize = 12, cexRow = .9, cexCol = .9,)
   dev.off()
   print("HeatMap Graph 9 is being generated in PDF...")
   
   #get Better Label
-  png(file=paste(output_dir,"/graphs/PheatMapPlot.png",sep=""),width=1000, height=600)
-  pheatmap(data_for_hm_sub, fontsize_row=4, scale='row')
+  png(file=paste(output_dir,"/graphs/PheatMapPlot.png",sep=""), width=1200, height=1000)
+  pheatmap(data_for_hm_sub, fontsize=12, scale='row', main = "pheatmap row cluster for gene expression data")
   dev.off()
   print("PheatMap 1 Graph 10 is being generated in PDF...")
   #To use color brewer we need to install it
@@ -506,11 +517,11 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   #see all color pelette available
   #display.brewer.all()
   
-  png(file=paste(output_dir,"/graphs/ColoredPheatMapPlot.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/ColoredPheatMapPlot.png",sep=""), width=1200, height=1000)
   greys = colorRampPalette(brewer.pal(9, "Greys"))(100)
   
-  pheatmap(data_for_hm_sub, fontsize_row=4, scale='row',
-           color=greys)
+  pheatmap(data_for_hm_sub, fontsize=12, scale='row',
+           color=greys, main = "pheatmap grey format")
   dev.off()
   print("PheatMap Grey 2 Graph 11 is being generated in PDF...")
   
@@ -518,12 +529,12 @@ RAnalysis <- function(file, path_to_quant, gene_map, count_type, ignoreTxVersion
   
   #pheatmap(data_for_hm_sub, fontsize_row=4, scale='row',color=pairs)
   
-  png(file=paste(output_dir,"/graphs/PheatMapForDemercation.png",sep=""),width=1000, height=600)
+  png(file=paste(output_dir,"/graphs/PheatMapForDemercation.png",sep=""), width=1200, height=1000)
   last_scheme = colorRampPalette(brewer.pal(7, "Blues"))(100)
   
-  pheatmap(data_for_hm_sub, fontsize_row=4, scale='row',
+  pheatmap(data_for_hm_sub, fontsize = 12, scale='row',
            color=last_scheme, cutree_cols = 2,
-           cutree_rows = 2)
+           cutree_rows = 2, main = "pheatmap row cluster with boundary set")
   dev.off()
   print("PheatMap 3 Graph 12 is being generated in PDF...")
   
